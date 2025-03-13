@@ -1,32 +1,25 @@
-name: Deploy to AWS Ubuntu
+name: Deploy to AWS Ubuntu with Docker
 
 on:
   push:
     branches:
-      - main  # Triggers when code is pushed to main
+      - main  # Triggers when pushing to the main branch
 
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: self-hosted  # Uses EC2 as a self-hosted runner
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Node.js (if applicable)
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
+      - name: Build Docker image
+        run: docker build -t myapp .
 
-      - name: Install dependencies
-        run: npm install  # Change for Python: pip install -r requirements.txt
-
-      - name: Build Project (Optional)
-        run: npm run build  # Remove if not needed
-
-      - name: Restart Application
+      - name: Stop and Remove Old Container (If Running)
         run: |
-          pm2 stop all || true
-          pm2 start npm -- start
+          docker stop myapp || true
+          docker rm myapp || true
 
-
+      - name: Run Docker Container
+        run: docker run -d -p 80:3000 --name myapp myapp
