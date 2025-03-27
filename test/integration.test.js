@@ -6,14 +6,15 @@ chai.use(chaiHttp);
 
 describe('Integration Test: Nginx Web Server', () => {
   it('should return status 200 and the greeting from the HTML file', (done) => {
-    chai.request('http://localhost:8080')  // Corrected URL string
+    chai.request('http://localhost:8080')  // Corrected the URL
       .get('/')
       .end((err, res) => {
         if (err) {
-          return done(err); // Properly handle errors
+          console.error('Request Error:', err);
+          return done(err);
         }
-        console.log(res.text);  // Debug only the response text
-        expect(res).to.have.status(200);  // Ensure the server returns a 200 status code
+        console.log('Response:', res.text);  // Debug the response body
+        expect(res).to.have.status(200);  // Ensure the server returns 200 status code
         expect(res.text).to.include('Hello from Docker!');  // Ensure the HTML content is correct
         done();
       });
